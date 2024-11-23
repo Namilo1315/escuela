@@ -1,0 +1,991 @@
+<html><head><base href="./">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Práctica de Matemáticas y Lengua</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+      }
+      
+      body {
+        background: linear-gradient(135deg, #F0F7FF 0%, #E1F6EC 100%);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        min-height: 100vh;
+        padding: 20px;
+      }
+    
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    
+      .background-shapes {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+    
+      .shape {
+        position: absolute;
+        backdrop-filter: blur(5px);
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        animation: float 20s infinite linear;
+      }
+    
+      @keyframes float {
+        0% {
+          transform: translate(0, 0) rotate(0deg) scale(1);
+        }
+        50% {
+          transform: translate(200px, -200px) rotate(180deg) scale(1.1);
+        }
+        100% {
+          transform: translate(400px, -400px) rotate(360deg) scale(1);
+        }
+      }
+    
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      .header {
+        text-align: center;
+        margin: 40px 0;
+      }
+      
+      .header h1 {
+        font-size: 2.8em;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(67, 97, 238, 0.15);
+      }
+      
+      .header p {
+        font-size: 1.2em;
+        color: #666;
+      }
+      
+      .subject-selector {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      
+      .subject-btn {
+        padding: 18px 35px;
+        border: none;
+        border-radius: 15px;
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        background: #FFF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        color: #4361EE;
+        border: 3px solid #4361EE;
+      }
+      
+      .subject-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(67, 97, 238, 0.2);
+        background: #4361EE;
+        color: white;
+      }
+      
+      .subject-btn.active {
+        background: #4CC9F0;
+        color: white;
+        border-color: #4CC9F0;
+      }
+      
+      .content-area {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 0 #B4F8C8, 0 5px 25px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      
+      .content-area:hover {
+        transform: translateY(-2px);
+      }
+      
+      .exercise {
+        text-align: center;
+        margin: 20px 0;
+      }
+      
+      .exercise h3 {
+        font-size: 1.6em;
+        line-height: 1.4;
+        margin-bottom: 30px;
+        color: #2C3E50;
+      }
+      
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+      }
+      
+      .option-btn {
+        padding: 20px;
+        border: 3px solid #4CC9F0;
+        border-radius: 12px;
+        background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        color: #000000;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      
+      .option-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(76, 201, 240, 0.25);
+        background: #4CC9F0;
+        color: white;
+      }
+      
+      .feedback {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+        display: none;
+      }
+      
+      .feedback.correct {
+        background: linear-gradient(135deg, #00F5D4, #00D4B0);
+        color: #003566;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 245, 212, 0.3);
+      }
+      
+      .feedback.incorrect {
+        background: linear-gradient(135deg, #FF5C8A, #FF3366);
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(255, 92, 138, 0.3);
+      }
+      
+      .canvas-container {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        margin: 20px auto 30px;
+        width: 200px;
+        height: 200px;
+      }
+    
+      /* Updated styling for the map SVG */
+      .province-map {
+        width: 400px;
+        height: 500px;
+        margin: 20px auto;
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+    
+      .province-map path {
+        fill: #e9ecef;
+        stroke: #495057;
+        stroke-width: 2;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+      }
+    
+      .province-map path.highlighted {
+        fill: #4CC9F0;
+        filter: drop-shadow(0 0 8px rgba(76, 201, 240, 0.6));
+      }
+    
+      .province-map path:hover {
+        fill: #B4F8C8;
+        filter: drop-shadow(0 0 6px rgba(180, 248, 200, 0.6));
+      }
+    
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+          margin: 0;
+        }
+        
+        .header h1 {
+          font-size: 2em;
+          margin-bottom: 10px;
+        }
+        
+        .header p {
+          font-size: 1em;
+        }
+        
+        .subject-selector {
+          flex-direction: column;
+          gap: 10px;
+        }
+        
+        .subject-btn {
+          width: 100%;
+          padding: 15px;
+          font-size: 18px;
+        }
+        
+        .content-area {
+          padding: 20px;
+          margin: 10px 0;
+        }
+        
+        .exercise h3 {
+          font-size: 1.2em;
+          line-height: 1.3;
+          margin-bottom: 20px;
+        }
+        
+        .options {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+        
+        .option-btn {
+          padding: 15px;
+          font-size: 1em;
+        }
+        
+        .feedback {
+          margin-top: 15px;
+          padding: 12px;
+          font-size: 1em;
+        }
+        
+        .canvas-container {
+          width: 100%;
+          height: auto;
+          max-width: 300px;
+        }
+        
+        .province-map {
+          width: 100%;
+          height: auto;
+          max-width: 300px;
+        }
+        
+        /* Adjust background shapes for mobile */
+        .shape {
+          opacity: 0.5;
+          transform: scale(0.7);
+        }
+        
+        .background-shapes {
+          display: none; /* Optional: hide decorative shapes on mobile */
+        }
+      }
+    
+      .welcome-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #4CC9F0, #B4F8C8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+        text-align: center;
+        animation: fadeIn 1s ease-in;
+      }
+    
+      .welcome-screen h1 {
+        font-size: 2.5em;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+      }
+    
+      .welcome-screen p {
+        font-size: 1.8em;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        margin-bottom: 30px;
+      }
+    
+      .start-btn {
+        padding: 15px 40px;
+        font-size: 1.5em;
+        background: white;
+        border: none;
+        border-radius: 25px;
+        color: #4CC9F0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+    
+      .start-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      }
+    
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    
+      @media (max-width: 768px) {
+        .welcome-screen h1 {
+          font-size: 2em;
+        }
+        
+        .welcome-screen p {
+          font-size: 1.4em;
+        }
+        
+        .start-btn {
+          padding: 12px 30px;
+          font-size: 1.2em;
+        }
+      }
+    
+    </style>
+    </head>
+    <body>
+    <div class="welcome-screen" id="welcomeScreen">
+      <h1>¡Bienvenidos!</h1>
+      <p>Para mis compañeros y Seño Ana<br>de 5° grado<br>de la Escuela La Pampa</p>
+      <p>¡A practicar!</p>
+      <button class="start-btn" onclick="startApp()">¡Comenzar!</button>
+    </div>
+    <div class="background-shapes">
+      <div class="shape" style="width: 80px; height: 80px; left: 10%; top: 20%"></div>
+      <div class="shape" style="width: 60px; height: 60px; left: 30%; top: 70%"></div>
+      <div class="shape" style="width: 100px; height: 100px; left: 60%; top: 40%"></div>
+      <div class="shape" style="width: 40px; height: 40px; left: 80%; top: 80%"></div>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h1>Aprende Matemáticas y Lengua</h1>
+        <p>Selecciona una materia para comenzar a practicar</p>
+      </div>
+      
+      <div class="subject-selector">
+        <button class="subject-btn" onclick="selectSubject('math')">Matemáticas</button>
+        <button class="subject-btn" onclick="selectSubject('language')">Lengua</button>
+        <button class="subject-btn" onclick="selectSubject('sac')">SAC</button>
+      </div>
+      
+      <div class="content-area">
+        <div class="exercise" id="exerciseContainer">
+          Selecciona una materia para comenzar
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+    
+    <script>
+    function startApp() {
+      const welcomeScreen = document.getElementById('welcomeScreen');
+      welcomeScreen.style.opacity = '0';
+      setTimeout(() => {
+        welcomeScreen.style.display = 'none';
+      }, 1000);
+    }
+    
+    function generateArgentinaMap(highlightedProvince) {
+      return `
+        <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- Buenos Aires -->
+          <path d="M120,260 L190,270 L200,340 L160,380 L100,340 L90,290 Z" 
+                class="${highlightedProvince === 'Buenos Aires' ? 'highlighted' : ''}" 
+                title="Buenos Aires"/>
+          
+          <!-- Córdoba -->
+          <path d="M100,200 L140,210 L150,250 L110,260 L90,230 Z"
+                class="${highlightedProvince === 'Córdoba' ? 'highlighted' : ''}"
+                title="Córdoba"/>
+          
+          <!-- Santa Fe -->
+          <path d="M140,180 L170,190 L160,240 L130,250 L120,220 Z"
+                class="${highlightedProvince === 'Santa Fe' ? 'highlighted' : ''}"
+                title="Santa Fe"/>
+          
+          <!-- Salta -->
+          <path d="M100,80 L140,90 L130,130 L90,120 L80,100 Z"
+                class="${highlightedProvince === 'Salta' ? 'highlighted' : ''}"
+                title="Salta"/>
+          
+          <!-- Jujuy -->
+          <path d="M90,50 L130,60 L120,90 L80,80 L70,60 Z"
+                class="${highlightedProvince === 'Jujuy' ? 'highlighted' : ''}"
+                title="Jujuy"/>
+          
+          <!-- Tucumán -->
+          <path d="M110,110 L140,120 L130,150 L100,140 L90,120 Z"
+                class="${highlightedProvince === 'Tucumán' ? 'highlighted' : ''}"
+                title="Tucumán"/>
+          
+          <!-- Catamarca -->
+          <path d="M90,130 L130,140 L120,170 L80,160 L70,140 Z"
+                class="${highlightedProvince === 'Catamarca' ? 'highlighted' : ''}"
+                title="Catamarca"/>
+          
+          <!-- La Rioja -->
+          <path d="M80,160 L120,170 L110,200 L70,190 L60,170 Z"
+                class="${highlightedProvince === 'La Rioja' ? 'highlighted' : ''}"
+                title="La Rioja"/>
+          
+          <!-- Chaco -->
+          <path d="M150,120 L180,130 L170,160 L140,150 L130,130 Z"
+                class="${highlightedProvince === 'Chaco' ? 'highlighted' : ''}"
+                title="Chaco"/>
+          
+          <!-- Formosa -->
+          <path d="M160,90 L190,100 L180,130 L150,120 L140,100 Z"
+                class="${highlightedProvince === 'Formosa' ? 'highlighted' : ''}"
+                title="Formosa"/>
+          
+          <!-- Misiones -->
+          <path d="M190,110 L210,120 L200,150 L180,140 L170,120 Z"
+                class="${highlightedProvince === 'Misiones' ? 'highlighted' : ''}"
+                title="Misiones"/>
+          
+          <!-- Corrientes -->
+          <path d="M170,140 L200,150 L190,180 L160,170 L150,150 Z"
+                class="${highlightedProvince === 'Corrientes' ? 'highlighted' : ''}"
+                title="Corrientes"/>
+          
+          <!-- Entre Ríos -->
+          <path d="M160,170 L190,180 L180,210 L150,200 L140,180 Z"
+                class="${highlightedProvince === 'Entre Ríos' ? 'highlighted' : ''}"
+                title="Entre Ríos"/>
+    
+          <!-- Mendoza -->
+          <path d="M60,220 L90,230 L80,270 L50,260 L40,230 Z"
+                class="${highlightedProvince === 'Mendoza' ? 'highlighted' : ''}"
+                title="Mendoza"/>
+    
+          <!-- San Juan -->
+          <path d="M70,190 L100,200 L90,230 L60,220 L50,200 Z"
+                class="${highlightedProvince === 'San Juan' ? 'highlighted' : ''}"
+                title="San Juan"/>
+    
+          <!-- San Luis -->
+          <path d="M80,230 L110,240 L100,270 L70,260 L60,240 Z"
+                class="${highlightedProvince === 'San Luis' ? 'highlighted' : ''}"
+                title="San Luis"/>
+        </svg>`;
+    }
+    
+    let currentSubject = '';
+    let currentExercise = null;
+    
+    const mathExercises = {
+      arithmetic: {
+        generate: () => {
+          const operations = ['+', '-', '×', '÷'];
+          const op = operations[Math.floor(Math.random() * operations.length)];
+          let num1, num2, answer;
+          
+          if (op === '÷') {
+            num2 = Math.floor(Math.random() * 10) + 1;
+            answer = Math.floor(Math.random() * 10) + 1;
+            num1 = num2 * answer;
+          } else {
+            num1 = Math.floor(Math.random() * 100) + 1;
+            num2 = Math.floor(Math.random() * 100) + 1;
+            answer = op === '+' ? num1 + num2 : 
+                    op === '-' ? num1 - num2 : 
+                    op === '×' ? num1 * num2 : num1 / num2;
+          }
+    
+          const contexts = [
+            {
+              suma: `Juan tiene ${num1} manzanas y María le regala ${num2} más.`,
+              resta: `Pedro tiene ${num1} caramelos y regala ${num2} a sus amigos.`,
+              multiplicación: `Hay ${num1} filas de sillas con ${num2} sillas en cada fila.`,
+              división: `Se quieren repartir ${num1} galletas entre ${num2} niños por igual.`
+            }
+          ];
+    
+          let problemText = '';
+          switch(op) {
+            case '+':
+              problemText = contexts[0].suma + " ¿Cuántas manzanas tiene ahora Juan?";
+              break;
+            case '-':
+              problemText = contexts[0].resta + " ¿Cuántos caramelos le quedan a Pedro?";
+              break;
+            case '×':
+              problemText = contexts[0].multiplicación + " ¿Cuántas sillas hay en total?";
+              break;
+            case '÷':
+              problemText = contexts[0].división + " ¿Cuántas galletas recibe cada niño?";
+              break;
+          }
+          
+          return {
+            question: Math.random() < 0.5 ? 
+              `¿Cuánto es ${num1} ${op} ${num2}?` : 
+              problemText,
+            answer: answer,
+            options: [
+              answer,
+              answer + Math.floor(Math.random() * 5) + 1,
+              answer - Math.floor(Math.random() * 5) - 1,
+              answer * 2
+            ].sort(() => Math.random() - 0.5)
+          };
+        }
+      },
+      triangles: {
+        generate: () => {
+          const types = ['escaleno', 'isósceles', 'equilátero'];
+          const type = types[Math.floor(Math.random() * types.length)];
+          let sides;
+          
+          switch(type) {
+            case 'escaleno':
+              sides = [3, 4, 5];
+              break;
+            case 'isósceles':
+              sides = [5, 5, 6];
+              break;
+            case 'equilátero':
+              sides = [6, 6, 6];
+              break;
+          }
+          
+          return {
+            question: `Si un triángulo tiene lados de ${sides.join(', ')} unidades, ¿qué tipo de triángulo es?`,
+            answer: type,
+            options: types
+          };
+        }
+      },
+      angles: {
+        generate: () => {
+          const angle = Math.floor(Math.random() * 270) + 45;
+          const canvas = document.createElement('canvas');
+          canvas.width = 200;
+          canvas.height = 200;
+          const ctx = canvas.getContext('2d');
+          
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.beginPath();
+          
+          const centerX = 100;
+          const centerY = 150;
+          
+          ctx.moveTo(centerX, centerY);
+          ctx.lineTo(centerX, centerY - 100);
+          
+          const angleRad = angle * Math.PI / 180;
+          const endX = centerX + Math.cos(angleRad - Math.PI/2) * 100;
+          const endY = centerY + Math.sin(angleRad - Math.PI/2) * 100;
+          ctx.moveTo(centerX, centerY);
+          ctx.lineTo(endX, endY);
+          
+          ctx.strokeStyle = '#2c3e50';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, 30, -Math.PI/2, angleRad - Math.PI/2);
+          ctx.stroke();
+          
+          return {
+            question: `¿Cuántos grados mide este ángulo?`,
+            canvas: canvas,
+            answer: angle,
+            options: [
+              angle,
+              (angle + Math.floor(Math.random() * 30) + 15) % 360,
+              (angle - Math.floor(Math.random() * 30) - 15 + 360) % 360,
+              (angle + Math.floor(Math.random() * 60) + 30) % 360
+            ].sort(() => Math.random() - 0.5)
+          };
+        }
+      }
+    };
+    
+    const languageExercises = {
+      verbs: {
+        generate: () => {
+          const verbs = [
+            {word: 'corro', tense: 'presente', time: 'presente'},
+            {word: 'corrí', tense: 'pretérito', time: 'pasado'},
+            {word: 'correré', tense: 'futuro', time: 'futuro'},
+            {word: 'salto', tense: 'presente', time: 'presente'},
+            {word: 'salté', tense: 'pretérito', time: 'pasado'},
+            {word: 'saltaré', tense: 'futuro', time: 'futuro'}
+          ];
+          const selectedVerb = verbs[Math.floor(Math.random() * verbs.length)];
+          
+          return {
+            question: `¿En qué tiempo verbal está "${selectedVerb.word}"?`,
+            answer: selectedVerb.time,
+            options: ['presente', 'pasado', 'futuro']
+          };
+        }
+      },
+      
+      grammar: {
+        generate: () => {
+          const exercises = [
+            {
+              type: 'sustantivos',
+              words: [
+                {word: 'María', category: 'propio'},
+                {word: 'mesa', category: 'común'},
+                {word: 'España', category: 'propio'},
+                {word: 'libro', category: 'común'},
+                {word: 'Londres', category: 'propio'},
+                {word: 'perro', category: 'común'}
+              ],
+              question: '¿Qué tipo de sustantivo es "{word}"?',
+              options: ['propio', 'común']
+            },
+            {
+              type: 'adjetivos',
+              words: [
+                {word: 'español', category: 'gentilicio'},
+                {word: 'alto', category: 'calificativo'},
+                {word: 'argentino', category: 'gentilicio'},
+                {word: 'rojo', category: 'calificativo'},
+                {word: 'mexicano', category: 'gentilicio'},
+                {word: 'grande', category: 'calificativo'}
+              ],
+              question: '¿Qué tipo de adjetivo es "{word}"?',
+              options: ['gentilicio', 'calificativo']
+            }
+          ];
+    
+          const exercise = exercises[Math.floor(Math.random() * exercises.length)];
+          const selectedWord = exercise.words[Math.floor(Math.random() * exercise.words.length)];
+    
+          return {
+            question: exercise.question.replace('{word}', selectedWord.word),
+            answer: selectedWord.category,
+            options: exercise.options
+          };
+        }
+      },
+      
+      sentences: {
+        generate: () => {
+          const sentences = [
+            {
+              text: 'María canta canciones',
+              type: 'bimembre',
+              subject: {complete: 'María', nucleus: 'María'},
+              predicate: {complete: 'canta canciones', nucleus: 'canta'}
+            },
+            {
+              text: 'Los pájaros vuelan alto',
+              type: 'bimembre',
+              subject: {complete: 'Los pájaros', nucleus: 'pájaros'},
+              predicate: {complete: 'vuelan alto', nucleus: 'vuelan'}
+            }
+          ];
+          
+          const selected = sentences[Math.floor(Math.random() * sentences.length)];
+          const questionTypes = [
+            {q: `¿La oración "${selected.text}" es unimembre o bimembre?`, a: selected.type},
+            {q: `En la oración "${selected.text}", ¿cuál es el núcleo del sujeto?`, a: selected.subject.nucleus},
+            {q: `En la oración "${selected.text}", ¿cuál es el núcleo del predicado?`, a: selected.predicate.nucleus}
+          ];
+          
+          const selectedQuestion = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+          
+          let options = ['unimembre', 'bimembre'];
+          if (selectedQuestion.q.includes('núcleo del sujeto')) {
+            options = sentences.map(s => s.subject.nucleus);
+          } else if (selectedQuestion.q.includes('núcleo del predicado')) {
+            options = sentences.map(s => s.predicate.nucleus);
+          }
+          
+          return {
+            question: selectedQuestion.q,
+            answer: selectedQuestion.a,
+            options: [...new Set(options)]
+          };
+        }
+      }
+    };
+    
+    const sacExercises = {
+      geography: {
+        generate: () => {
+          const provinces = [
+            {name: 'Buenos Aires', capital: 'La Plata'},
+            {name: 'Córdoba', capital: 'Córdoba'},
+            {name: 'Santa Fe', capital: 'Santa Fe'},
+            {name: 'Mendoza', capital: 'Mendoza'},
+            {name: 'Tucumán', capital: 'San Miguel de Tucumán'},
+            {name: 'Salta', capital: 'Salta'},
+            {name: 'Misiones', capital: 'Posadas'},
+            {name: 'Entre Ríos', capital: 'Paraná'},
+            {name: 'Corrientes', capital: 'Corrientes'},
+            {name: 'Santiago del Estero', capital: 'Santiago del Estero'},
+            {name: 'San Juan', capital: 'San Juan'},
+            {name: 'Jujuy', capital: 'San Salvador de Jujuy'},
+            {name: 'Río Negro', capital: 'Viedma'},
+            {name: 'Neuquén', capital: 'Neuquén'},
+            {name: 'Formosa', capital: 'Formosa'},
+            {name: 'Chaco', capital: 'Resistencia'},
+            {name: 'San Luis', capital: 'San Luis'},
+            {name: 'Catamarca', capital: 'San Fernando del Valle de Catamarca'},
+            {name: 'La Rioja', capital: 'La Rioja'},
+            {name: 'La Pampa', capital: 'Santa Rosa'}
+          ];
+    
+          const regions = [
+            {name: 'Noroeste', provinces: ['Jujuy', 'Salta', 'Tucumán', 'Catamarca', 'La Rioja']},
+            {name: 'Noreste', provinces: ['Formosa', 'Chaco', 'Misiones', 'Corrientes', 'Entre Ríos']},
+            {name: 'Cuyo', provinces: ['Mendoza', 'San Juan', 'San Luis']},
+            {name: 'Centro', provinces: ['Córdoba', 'Santa Fe', 'Buenos Aires']},
+            {name: 'Patagonia', provinces: ['La Pampa', 'Neuquén', 'Río Negro', 'Chubut', 'Santa Cruz', 'Tierra del Fuego']}
+          ];
+    
+          const borderingCountries = [
+            {name: 'Chile', border: 'oeste', fact: 'Comparte la cordillera de los Andes'},
+            {name: 'Bolivia', border: 'norte', fact: 'Limita con las provincias de Jujuy y Salta'},
+            {name: 'Paraguay', border: 'noreste', fact: 'Separado por el río Paraná'},
+            {name: 'Brasil', border: 'noreste', fact: 'Comparte frontera con Misiones'},
+            {name: 'Uruguay', border: 'este', fact: 'Separado por el río Uruguay'}
+          ];
+    
+          const questionTypes = [
+            {
+              type: 'capital',
+              generateQ: () => {
+                const province = provinces[Math.floor(Math.random() * provinces.length)];
+                return {
+                  question: `¿Cuál es la capital de la provincia de ${province.name}?`,
+                  answer: province.capital,
+                  options: [...new Set([
+                    province.capital,
+                    provinces[Math.floor(Math.random() * provinces.length)].capital,
+                    provinces[Math.floor(Math.random() * provinces.length)].capital,
+                    provinces[Math.floor(Math.random() * provinces.length)].capital
+                  ])].sort(() => Math.random() - 0.5)
+                };
+              }
+            },
+            {
+              type: 'region',
+              generateQ: () => {
+                const region = regions[Math.floor(Math.random() * regions.length)];
+                const province = region.provinces[Math.floor(Math.random() * region.provinces.length)];
+                return {
+                  question: `¿A qué región pertenece la provincia de ${province}?`,
+                  answer: region.name,
+                  options: regions.map(r => r.name)
+                };
+              }
+            },
+            {
+              type: 'bordering',
+              generateQ: () => {
+                const country = borderingCountries[Math.floor(Math.random() * borderingCountries.length)];
+                return {
+                  question: `¿Qué país limita con Argentina por el ${country.border}?`,
+                  answer: country.name,
+                  options: borderingCountries.map(c => c.name)
+                };
+              }
+            },
+            {
+              type: 'border-fact',
+              generateQ: () => {
+                const country = borderingCountries[Math.floor(Math.random() * borderingCountries.length)];
+                return {
+                  question: `¿Qué característica tiene la frontera entre Argentina y ${country.name}?`,
+                  answer: country.fact,
+                  options: borderingCountries.map(c => c.fact)
+                };
+              }
+            }
+          ];
+    
+          const selectedQ = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+          return selectedQ.generateQ();
+        }
+      },
+      biology: {
+        generate: () => {
+          const topics = [
+            {
+              type: 'animals',
+              categories: {
+                'Mamíferos': ['León', 'Elefante', 'Delfín'],
+                'Reptiles': ['Tortuga', 'Serpiente', 'Lagarto'],
+                'Anfibios': ['Rana', 'Sapo', 'Salamandra']
+              }
+            },
+            {
+              type: 'plants',
+              parts: [
+                {name: 'Raíz', function: 'Absorbe agua y minerales'},
+                {name: 'Tallo', function: 'Transporta nutrientes'},
+                {name: 'Hoja', function: 'Realiza la fotosíntesis'}
+              ]
+            }
+          ];
+    
+          const questionTypes = [
+            {
+              type: 'classification',
+              generateQ: () => {
+                const animalTypes = Object.keys(topics[0].categories);
+                const type = animalTypes[Math.floor(Math.random() * animalTypes.length)];
+                const animal = topics[0].categories[type][Math.floor(Math.random() * topics[0].categories[type].length)];
+                return {
+                  question: `¿A qué grupo pertenece el ${animal}?`,
+                  answer: type,
+                  options: animalTypes
+                };
+              }
+            },
+            {
+              type: 'plant-parts',
+              generateQ: () => {
+                const part = topics[1].parts[Math.floor(Math.random() * topics[1].parts.length)];
+                return {
+                  question: `¿Cuál es la función de ${part.name} en una planta?`,
+                  answer: part.function,
+                  options: topics[1].parts.map(p => p.function)
+                };
+              }
+            }
+          ];
+    
+          const selectedQ = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+          return selectedQ.generateQ();
+        }
+      },
+    
+      history: {
+        generate: () => {
+          const topics = [
+            {
+              question: '¿Qué caracteriza a los pueblos nómades?',
+              answer: 'Se trasladaban de un lugar a otro en busca de alimentos',
+              options: [
+                'Se trasladaban de un lugar a otro en busca de alimentos',
+                'Vivían en un lugar fijo',
+                'Construían grandes ciudades',
+                'Cultivaban la tierra'
+              ]
+            },
+            {
+              question: '¿Qué caracteriza a los pueblos sedentarios?',
+              answer: 'Se establecían en un lugar fijo y cultivaban la tierra',
+              options: [
+                'Se establecían en un lugar fijo y cultivaban la tierra',
+                'Cazaban animales continuamente',
+                'No tenían viviendas permanentes',
+                'Viajaban constantemente'
+              ]
+            }
+          ];
+    
+          const selected = topics[Math.floor(Math.random() * topics.length)];
+          return selected;
+        }
+      }
+    };
+    
+    // Modify selectSubject function to handle SAC just like other subjects:
+    function selectSubject(subject) {
+      currentSubject = subject;
+      document.querySelectorAll('.subject-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      generateExercise();
+    }
+    
+    function generateExercise() {
+      const container = document.getElementById('exerciseContainer');
+      const exercises = 
+        currentSubject === 'math' ? mathExercises : 
+        currentSubject === 'language' ? languageExercises :
+        sacExercises;
+      const exerciseType = Object.keys(exercises)[Math.floor(Math.random() * Object.keys(exercises).length)];
+      currentExercise = exercises[exerciseType].generate();
+      
+      let html = `<h3>${currentExercise.question}</h3>`;
+      
+      if (currentExercise.canvas) {
+        html += `<div class="canvas-container"></div>`;
+      }
+      
+      if (currentExercise.svg) {
+        html += `<div class="province-map">${currentExercise.svg}</div>`;
+      }
+      
+      html += `<div class="options">`;
+      currentExercise.options.forEach(option => {
+        html += `<button class="option-btn" onclick="checkAnswer('${option}')">${option}</button>`;
+      });
+      html += `</div>`;
+      
+      container.innerHTML = html;
+      
+      if (currentExercise.canvas) {
+        document.querySelector('.canvas-container').appendChild(currentExercise.canvas);
+      }
+    }
+    
+    function checkAnswer(selected) {
+      const feedback = document.getElementById('feedback');
+      feedback.style.display = 'block';
+      
+      if (selected == currentExercise.answer) {
+        feedback.textContent = '¡Correcto! ¡Muy bien!';
+        feedback.className = 'feedback correct';
+        setTimeout(() => {
+          feedback.style.display = 'none';
+          generateExercise();
+        }, 1500);
+      } else {
+        feedback.textContent = 'Incorrecto. Intenta de nuevo.';
+        feedback.className = 'feedback incorrect';
+        setTimeout(() => {
+          feedback.style.display = 'none';
+        }, 1500);
+      }
+    }
+    </script>
+    </body></html>
